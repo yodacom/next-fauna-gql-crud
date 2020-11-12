@@ -1,25 +1,25 @@
 import { useState, useEffect } from "react";
-import Router from 'next/router';
+import Router from "next/router";
 import { gql } from "graphql-request";
 import { useForm } from "react-hook-form";
-import utilStyles from '../styles/utils.module.css'
+import utilStyles from "../styles/utils.module.css";
 import { graphQLClient } from "../utils/graphql-client";
 
 const EditForm = ({ defaultValues, id }) => {
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const { handleSubmit, register, reset, error } = useForm({
+  const { handleSubmit, register, reset, errors } = useForm({
     defaultValues: {
       ...defaultValues,
     },
   });
 
   const onSubmit = handleSubmit(async ({ task, completed }) => {
-    if (errorMessage) setErrorMessage('');
+    if (errorMessage) setErrorMessage("");
 
     const query = gql`
       mutation UpdateATodo($id: ID!, $task: String!, $completed: Boolean!) {
-        updateTodo(id:$id, data: { task: $task, completed: $completed }) {
+        updateTodo(id: $id, data: { task: $task, completed: $completed }) {
           task
           completed
         }
@@ -34,8 +34,7 @@ const EditForm = ({ defaultValues, id }) => {
 
     try {
       await graphQLClient.request(query, variables);
-      Router.push('/');
-
+      Router.push("/");
     } catch (error) {
       console.error(error);
       setErrorMessage(error.message);
@@ -54,7 +53,7 @@ const EditForm = ({ defaultValues, id }) => {
           <input
             type="text"
             name="task"
-            ref={register({ required: 'Task is required' })}
+            ref={register({ required: "Task is required" })}
           />
           {errors.task && (
             <span role="alert" className={utilStyles.error}>
@@ -68,22 +67,22 @@ const EditForm = ({ defaultValues, id }) => {
           <input type="checkbox" name="completed" ref={register()} />
           {errors.completed && (
             <span role="alert" className={utilStyles.error}>
-              {error.completed.message}
+              {errors.completed.message}
             </span>
           )}
         </div>
 
-        <div className={utilStyles, submit}>
+        <div className={utilStyles.submit}>
           <button type="submit">Update</button>
         </div>
       </form>
 
-      {errorMessage && {
+      {errorMessage && (
         <p role="alert" className={utilStyles.errorMessage}>
           {errorMessage}
         </p>
-      }}
-      </>
+      )}
+    </>
   );
 };
 

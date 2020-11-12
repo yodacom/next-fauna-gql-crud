@@ -13,7 +13,7 @@ const Todo = () => {
 
   const query = gql`
     query FindATodoByID($id: ID!) {
-        findTodoByID(id:$id: $id) {
+        findTodoByID(id:$id) {
           task
           completed
         }
